@@ -32,6 +32,7 @@ class GameWrapperPokemonRed(PyBoyGameWrapper):
 
     def __init__(self, *args, **kwargs):
         self.shape = (10, 18)
+        self.pokedex = []
         super().__init__(*args, game_area_section=(0, 0) + self.shape, game_area_wrap_around=True, **kwargs)
 
     def post_tick(self):
@@ -50,12 +51,43 @@ class GameWrapperPokemonRed(PyBoyGameWrapper):
         """
         PyBoyGameWrapper.start_game(self, timer_div=timer_div)
 
-        # Boot screen
+        # while self.tilemap_background[7:14, 8] != [352, 353, 383, 357, 358, 359, 360]:
+        #     self.pyboy.tick()
+
+        # Nintendo copyright screen
         while True:
             self.pyboy.tick()
             self.tilemap_background.refresh_lcdc()
-            if self.tilemap_background[0:3, 16] == [231, 224, 235]: # 'HAL' on the first screen
+            if self.tilemap_background[2, 7] == 383:
+                self.pyboy.send_input(WindowEvent.PRESS_BUTTON_START)
+                print('copyright screen')
                 break
+
+        # game freak intro
+        # while True:
+        #     self.pyboy.tick()
+        #     self.tilemap_background.refresh_lcdc()
+        #     if len(self._sprites_on_screen()) > 0 and self._sprites_on_screen()[0] == 160:
+        #         self.pyboy.send_input(WindowEvent.PRESS_BUTTON_START)
+        #         print('game freak intro')
+        #         break
+
+        # opening cutscene
+        while True:
+            self.pyboy.tick()
+            self.tilemap_background.refresh_lcdc()
+            if self.tilemap_background[14, 9] == 262:
+                self.pyboy.send_input(WindowEvent.PRESS_BUTTON_START)
+                print('opening cutscene')
+                break
+
+        while self.tilemap_background[7:14, 8] != [352, 353, 383, 357, 358, 359, 360]:
+            self.pyboy.tick()
+            self.tilemap_background.refresh_lcdc()
+
+        self.pyboy.send_input(WindowEvent.PRESS_BUTTON_START)
+        self.game_has_started = True
+
 
     def reset_game(self, timer_div=None):
         """

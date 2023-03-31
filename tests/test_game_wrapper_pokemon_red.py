@@ -21,5 +21,5 @@ def test_pokemon_red_basics(pokemon_red_rom):
 
     pokemon_red = pyboy.game_wrapper()
     pokemon_red.start_game()
-
+    assert pokemon_red.pokedex == []
     pyboy.stop()
